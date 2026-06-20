@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Meus Apps</title>
+
+<meta name="theme-color" content="#0f172a">
+
+<link rel="manifest" href="manifest.json">
+
+<style>
+
+:root{
+    --bg:#f1f5f9;
+    --card:#ffffff;
+    --text:#0f172a;
+    --shadow:0 4px 15px rgba(0,0,0,.08);
+}
+
+.dark{
+    --bg:#0f172a;
+    --card:#1e293b;
+    --text:#f8fafc;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    transition:.3s;
+}
+
+header{
+    padding:20px;
+    text-align:center;
+}
+
+h1{
+    font-size:1.8rem;
+    margin-bottom:15px;
+}
+
+.search{
+    width:100%;
+    max-width:500px;
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    font-size:16px;
+    outline:none;
+}
+
+.topbar{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:10px;
+}
+
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    border:1px solid lightblue;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(160px,1fr));
+
+    gap:20px;
+    padding:20px;
+}
+
+.card{
+    background:var(--card);
+    border-radius:18px;
+    padding:15px;
+    text-decoration:none;
+    color:var(--text);
+    box-shadow:var(--shadow);
+    transition:.25s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.icon{
+    font-size:3rem;
+    margin-bottom:10px;
+}
+
+.name{
+    font-size:1.1rem;
+    font-weight:bold;
+}
+
+.desc{
+    opacity:.7;
+    margin-top:5px;
+    font-size:.9rem;
+}
+
+footer{
+    text-align:center;
+    padding:20px;
+    opacity:.6;
+}
+
+.desc{
+    opacity:.7;
+    margin-top:5px;
+    font-size:.9rem;
+
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.favorito{
+    position:relative;
+}
+
+.excluir{
+    position:absolute;
+    top:8px;
+    right:8px;
+    width:28px;
+    height:28px;
+    border:none;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:16px;
+    background:red;
+    color:white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<h1>📱 Meus Aplicativos</h1>
+
+<input
+type="text"
+class="search"
+id="search"
+placeholder="Pesquisar aplicativo..."
+>
+
+<div class="topbar">
+
+<button id="tema">
+🌙 Tema
+</button>
+
+<button id="instalar" hidden>
+⬇️ Instalar
+</button>
+
+<button onclick="adicionarFavorito()">
+➕ Adicionar Favorito
+</button>
+
+</div>
+
+</header>
+
+<div class="grid" id="apps">
+
+<a class="card"
+data-name="radio"
+href="https://nildoneumann.github.io/RadioPro/">
+
+<div class="icon">📻</div>
+<div class="name">Rádio</div>
+<div class="desc">
+Ouça suas rádios favoritas
+</div>
+
+</a>
+
+<a class="card"
+data-name="infracoes"
+href="https://nildoneumann.github.io/CTB-Capitulo-XV/">
+
+<div class="icon">👮</div>
+<div class="name">CTB Capítulo XV</div>
+<div class="desc">
+(Das Infrações)
+</div>
+
+</a>
+
+<a class="card"
+data-name="notas"
+href="https://nildoneumann.github.io/bloco-de-notas/">
+
+<div class="icon">📝</div>
+<div class="name">Notas</div>
+<div class="desc">
+Bloco de notas
+</div>
+
+</a>
+
+<a class="card"
+data-name="investimentos"
+href="https://nildoneumann.github.io/simulador-de-investimentos/">
+
+<div class="icon">📈</div>
+<div class="name">Investimentos</div>
+<div class="desc">
+Simule seus Investimentos
+</div>
+
+</a>
+
+<a class="card"
+data-name="qr code"
+href="https://nildoneumann.github.io/geradorQrCode/">
+
+<div class="icon">🔲</div>
+<div class="name">QR Code</div>
+<div class="desc">
+Gerar e ler QR Codes
+</div>
+
+</a>
+
+<a class="card"
+data-name="gastos"
+href="https://nildoneumann.github.io/Controle-de-Gastos/">
+
+<div class="icon">💰</div>
+<div class="name">Controle de Gastos</div>
+<div class="desc">
+Organize seus gastos pessoais
+</div>
+
+</a>
+
+<a class="card"
+data-name="renda"
+href="https://nildoneumann.github.io/simulador-de-renda/">
+
+<div class="icon">💰</div>
+<div class="name">Simulador de renda fixa</div>
+<div class="desc">
+CDBs, LCAs ou LCIs
+</div>
+
+</a>
+
+
+
+</div>
+
+<footer>
+
+Hub PWA © 2026
+
+</footer>
+
+<script>
+
+const pesquisa =
+document.getElementById("search");
+
+pesquisa.addEventListener("input",()=>{
+
+const valor =
+pesquisa.value.toLowerCase();
+
+document
+.querySelectorAll(".card")
+.forEach(card=>{
+
+const nome =
+card.dataset.name;
+
+card.style.display =
+nome.includes(valor)
+? "block"
+: "none";
+
+});
+
+});
+
+const tema =
+document.getElementById("tema");
+
+tema.addEventListener("click",()=>{
+
+document.body.classList.toggle("dark");
+
+localStorage.setItem(
+"tema",
+document.body.classList.contains("dark")
+? "dark"
+: "light"
+);
+
+});
+
+if(
+localStorage.getItem("tema")
+==="dark"
+){
+document.body.classList.add("dark");
+}
+
+let deferredPrompt;
+
+window.addEventListener(
+"beforeinstallprompt",
+(e)=>{
+
+e.preventDefault();
+
+deferredPrompt = e;
+
+const btn =
+document.getElementById("instalar");
+
+btn.hidden = false;
+
+btn.onclick = async()=>{
+
+deferredPrompt.prompt();
+
+};
+
+});
+
+if("serviceWorker" in navigator){
+navigator.serviceWorker.register(
+"sw.js"
+);
+}
+
+let favoritos =
+JSON.parse(localStorage.getItem("favoritos")) || [];
+
+function adicionarFavorito(){
+
+    const nome = prompt("Nome do favorito:");
+
+    if(!nome) return;
+
+    let url = prompt("URL do site:");
+
+    if(!url) return;
+
+    if(!url.startsWith("http")){
+        url = "https://" + url;
+    }
+
+    favoritos.push({
+        nome,
+        url
+    });
+
+    localStorage.setItem(
+        "favoritos",
+        JSON.stringify(favoritos)
+    );
+
+    renderizarFavoritos();
+}
+
+function excluirFavorito(index){
+
+    if(
+        !confirm(
+            "Excluir este favorito?"
+        )
+    ) return;
+
+    favoritos.splice(index,1);
+
+    localStorage.setItem(
+        "favoritos",
+        JSON.stringify(favoritos)
+    );
+
+    renderizarFavoritos();
+}
+
+function renderizarFavoritos(){
+
+    const apps =
+    document.getElementById("apps");
+
+    document
+    .querySelectorAll(".favorito")
+    .forEach(el=>el.remove());
+
+    favoritos.forEach((f,index)=>{
+
+        const card =
+        document.createElement("div");
+
+        card.className =
+        "card favorito";
+
+        card.innerHTML = `
+
+            <button
+                class="excluir"
+                onclick="excluirFavorito(${index})">
+                ✕
+            </button>
+
+            <a
+                href="${f.url}"
+                target="_blank"
+                style="
+                    text-decoration:none;
+                    color:inherit;
+                    display:block;
+                ">
+
+                <div class="icon">⭐</div>
+
+                <div class="name">
+                    ${f.nome}
+                </div>
+
+                <div class="desc">
+                    ${f.url}
+                </div>
+
+            </a>
+
+        `;
+
+        apps.appendChild(card);
+
+    });
+
+}
+renderizarFavoritos();
+</script>
+
+</body>
+</html>
