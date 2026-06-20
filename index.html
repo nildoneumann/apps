@@ -79,8 +79,8 @@ button{
     grid-template-columns:
     repeat(auto-fit,minmax(160px,1fr));
 
-    gap:20px;
-    padding:20px;
+    gap:15px;
+    padding:15px;
 }
 
 .card{
@@ -157,7 +157,7 @@ footer{
 
 <header>
 
-<h1>📱 Meus Aplicativos</h1>
+<h1>📲 Meus Aplicativos</h1>
 
 <input
 type="text"
@@ -250,7 +250,7 @@ Gerar e ler QR Codes
 data-name="gastos"
 href="https://nildoneumann.github.io/Controle-de-Gastos/">
 
-<div class="icon">💰</div>
+<div class="icon">📋</div>
 <div class="name">Controle de Gastos</div>
 <div class="desc">
 Organize seus gastos pessoais
@@ -358,8 +358,20 @@ navigator.serviceWorker.register(
 );
 }
 
-let favoritos =
-JSON.parse(localStorage.getItem("favoritos")) || [];
+let favoritos = [];
+
+const saved = localStorage.getItem("favoritos");
+
+if(saved){
+    try{
+        favoritos = JSON.parse(saved);
+        if(!Array.isArray(favoritos)){
+            favoritos = [];
+        }
+    }catch(e){
+        favoritos = [];
+    }
+}
 
 function adicionarFavorito(){
 
@@ -460,6 +472,16 @@ function renderizarFavoritos(){
 
 }
 renderizarFavoritos();
+
+function getDominio(url){
+    try{
+        return new URL(url).hostname.replace("www.","");
+    }catch(e){
+        return url;
+    }
+}
+
+    
 </script>
 
 </body>
