@@ -1,4 +1,4 @@
-const CACHE_NAME = "hub-v3"; // Mude a versão aqui (ex: v1 para v2) quando alterar o app
+const CACHE_NAME = "hub-v4"; // Mude a versão aqui (ex: v1 para v2) quando alterar o app
 const ASSETS = [
   "./",
   "./index.html",
