@@ -863,6 +863,20 @@ function renderizarFavoritos() {
 }
 
 renderizarFavoritos();
+
+/* Disable context menu */
+document.addEventListener('contextmenu', e => {
+    // Lista de tags permitidas em letras maiúsculas
+    const tagsPermitidas = ['INPUT', 'TEXTAREA', 'IMG'];
+    
+    if (tagsPermitidas.includes(e.target.tagName)) {
+        return; // Permite o clique padrão
+    }
+    
+    e.preventDefault(); // Bloqueia o resto
+});
+
+  
 </script>
 
 </body>
