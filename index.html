@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meus Apps</title>
+<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f4f8;
+  --card: rgba(255,255,255,0.72);
+  --card-solid: #ffffff;
+  --text: #0f172a;
+  --text-secondary: #475569;
+  --shadow: 0 4px 24px rgba(0,0,0,.06);
+  --shadow-hover: 0 12px 40px rgba(0,0,0,.12);
+  --accent: #6366f1;
+  --accent-light: #818cf8;
+  --accent-glow: rgba(99,102,241,.25);
+  --border: rgba(0,0,0,.06);
+  --search-bg: rgba(255,255,255,0.8);
+  --blob1: rgba(99,102,241,.12);
+  --blob2: rgba(168,85,247,.10);
+  --blob3: rgba(59,130,246,.08);
+  --modal-overlay: rgba(15,23,42,.4);
+  --btn-bg: rgba(255,255,255,.7);
+  --btn-border: rgba(0,0,0,.08);
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --success: #22c55e;
+}
+
+.dark {
+  --bg: #0b1120;
+  --card: rgba(30,41,59,0.65);
+  --card-solid: #1e293b;
+  --text: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --shadow: 0 4px 24px rgba(0,0,0,.25);
+  --shadow-hover: 0 12px 40px rgba(0,0,0,.4);
+  --accent: #818cf8;
+  --accent-light: #a5b4fc;
+  --accent-glow: rgba(129,140,248,.2);
+  --border: rgba(255,255,255,.06);
+  --search-bg: rgba(30,41,59,0.7);
+  --blob1: rgba(99,102,241,.08);
+  --blob2: rgba(168,85,247,.06);
+  --blob3: rgba(59,130,246,.05);
+  --modal-overlay: rgba(0,0,0,.6);
+  --btn-bg: rgba(30,41,59,0.7);
+  --btn-border: rgba(255,255,255,.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background .4s ease, color .4s ease;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── Animated background blobs ── */
+.bg-blobs {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bg-blobs .blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: float 20s ease-in-out infinite;
+}
+
+.bg-blobs .blob:nth-child(1) {
+  width: 500px; height: 500px;
+  background: var(--blob1);
+  top: -10%; left: -5%;
+  animation-delay: 0s;
+}
+
+.bg-blobs .blob:nth-child(2) {
+  width: 400px; height: 400px;
+  background: var(--blob2);
+  top: 40%; right: -8%;
+  animation-delay: -7s;
+  animation-duration: 25s;
+}
+
+.bg-blobs .blob:nth-child(3) {
+  width: 350px; height: 350px;
+  background: var(--blob3);
+  bottom: -5%; left: 30%;
+  animation-delay: -14s;
+  animation-duration: 22s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25%  { transform: translate(40px, -30px) scale(1.05); }
+  50%  { transform: translate(-20px, 20px) scale(.95); }
+  75%  { transform: translate(30px, 40px) scale(1.02); }
+}
+
+/* ── Main wrapper ── */
+.wrapper {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ── Header ── */
+header {
+  padding: 40px 0 10px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  background: linear-gradient(135deg, var(--accent), #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: .95rem;
+  font-weight: 500;
+  margin-top: -14px;
+  margin-bottom: 20px;
+}
+
+/* ── Search ── */
+.search-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto 16px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px; height: 20px;
+  color: var(--text-secondary);
+  pointer-events: none;
+  transition: color .3s;
+}
+
+.search {
+  width: 100%;
+  padding: 14px 16px 14px 48px;
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  font-size: .95rem;
+  font-family: inherit;
+  font-weight: 500;
+  outline: none;
+  background: var(--search-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text);
+  transition: border-color .3s, box-shadow .3s, background .3s;
+}
+
+.search::placeholder {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.search:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+.search:focus ~ .search-icon {
+  color: var(--accent);
+}
+
+/* ── Top bar buttons ── */
+.topbar {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  border: 1.5px solid var(--btn-border);
+  border-radius: 12px;
+  background: var(--btn-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: .875rem;
+  font-weight: 600;
+  color: var(--text);
+  transition: all .25s ease;
+  user-select: none;
+}
+
+.btn:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px var(--accent-glow);
+}
+
+.btn:active {
+  transform: translateY(0) scale(.97);
+}
+
+.btn svg {
+  width: 18px; height: 18px;
+  flex-shrink: 0;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+  border-color: transparent;
+}
+
+.btn-danger:hover {
+  background: var(--danger-hover);
+  box-shadow: 0 4px 16px rgba(239,68,68,.3);
+}
+
+.btn-accent {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+}
+
+.btn-accent:hover {
+  background: var(--accent-light);
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+
+/* ── Grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+  padding-bottom: 20px;
+}
+
+/* ── Card ── */
+.card {
+  position: relative;
+  background: var(--card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 15px 11px 12px;
+  text-decoration: none;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  transition: all .3s cubic-bezier(.4,0,.2,1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  animation: cardIn .5s ease both;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--accent-glow);
+}
+
+.card:active {
+  transform: translateY(-2px) scale(.98);
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(20px) scale(.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Stagger animation */
+.card:nth-child(1)  { animation-delay: .03s; }
+.card:nth-child(2)  { animation-delay: .06s; }
+.card:nth-child(3)  { animation-delay: .09s; }
+.card:nth-child(4)  { animation-delay: .12s; }
+.card:nth-child(5)  { animation-delay: .15s; }
+.card:nth-child(6)  { animation-delay: .18s; }
+.card:nth-child(7)  { animation-delay: .21s; }
+.card:nth-child(8)  { animation-delay: .24s; }
+.card:nth-child(9)  { animation-delay: .27s; }
+.card:nth-child(10) { animation-delay: .30s; }
+
+.icon-box {
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--accent-glow), rgba(168,85,247,.12));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  font-size: 1.75rem;
+  transition: transform .3s;
+}
+
+.card:hover .icon-box {
+  transform: scale(1.1) rotate(-3deg);
+}
+
+.icon-favicon {
+  width: 36px; height: 36px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.name {
+  font-size: .9rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+
+.desc {
+  color: var(--text-secondary);
+  font-size: .78rem;
+  font-weight: 400;
+  line-height: 1.4;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ── Favorite card extras ── */
+.favorito .excluir {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px; height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all .25s;
+  z-index: 2;
+}
+
+.favorito:hover .excluir {
+  opacity: 1;
+}
+
+.favorito .excluir:hover {
+  background: var(--danger);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+/* ── Footer ── */
+footer {
+  text-align: center;
+  padding: 24px 20px 32px;
+  color: var(--text-secondary);
+  font-size: .82rem;
+  font-weight: 500;
+}
+
+footer span {
+  opacity: .5;
+}
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--modal-overlay);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn .2s ease;
+}
+
+.modal-overlay.hidden { display: none; }
+
+.modal {
+  background: var(--card-solid);
+  border-radius: 24px;
+  padding: 32px 28px 28px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.2);
+  animation: modalIn .3s cubic-bezier(.4,0,.2,1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(24px) scale(.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.modal-field {
+  margin-bottom: 16px;
+}
+
+.modal-field label {
+  display: block;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.modal-field input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: .95rem;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  transition: border-color .3s, box-shadow .3s;
+}
+
+.modal-field input::placeholder {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.modal-field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.modal-actions .btn { flex: 1; justify-content: center; }
+
+/* ── Confirm dialog ── */
+.confirm-text {
+  color: var(--text-secondary);
+  font-size: .95rem;
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+/* ── Empty state ── */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+
+.empty-state .empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  opacity: .4;
+}
+
+.empty-state p {
+  font-size: .9rem;
+  font-weight: 500;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  h1 { font-size: 1.4rem; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+  .card { padding: 16px 10px 14px; border-radius: 16px; }
+  .icon-box { width: 48px; height: 48px; font-size: 1.5rem; border-radius: 14px; }
+  .name { font-size: .82rem; }
+  .desc { font-size: .72rem; }
+  .topbar { gap: 8px; }
+  .btn { padding: 9px 14px; font-size: .8rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+</style>
+</head>
+
+<body>
+
+<!-- Background blobs -->
+<div class="bg-blobs" aria-hidden="true">
+  <div class="blob"></div>
+  <div class="blob"></div>
+  <div class="blob"></div>
+</div>
+
+<div class="wrapper">
+
+<header>
+  <h1>Meus Aplicativos</h1>
+  <p class="subtitle">Acesse suas ferramentas favoritas de forma rápida</p>
+
+  <div class="search-wrapper">
+    <input
+      type="text"
+      class="search"
+      id="search"
+      placeholder="Pesquisar aplicativo..."
+      aria-label="Pesquisar aplicativo"
+    >
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+  </div>
+
+  <div class="topbar">
+    <button class="btn" id="tema" aria-label="Alternar tema claro/escuro">
+      <svg id="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <svg id="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <span id="theme-label">Tema</span>
+    </button>
+    <button class="btn" id="instalar" hidden aria-label="Instalar aplicativo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Instalar
+    </button>
+    <button class="btn btn-accent" onclick="abrirModalAdicionar()" aria-label="Adicionar favorito">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Adicionar
+    </button>
+  </div>
+</header>
+
+<main class="grid" id="apps" role="list">
+  <a class="card" data-name="radio" href="https://nildoneumann.github.io/RadioPro/" role="listitem">
+    <div class="icon-box">📻</div>
+    <div class="name">Rádio</div>
+    <div class="desc">Ouça rádios online</div>
+  </a>
+  <a class="card" data-name="ctb infracoes" href="https://nildoneumann.github.io/CTB-Capitulo-XV/" role="listitem">
+    <div class="icon-box">👮</div>
+    <div class="name">CTB Capítulo XV</div>
+    <div class="desc">Das Infrações</div>
+  </a>
+  <a class="card" data-name="bloco notas" href="https://nildoneumann.github.io/bloco-de-notas/" role="listitem">
+    <div class="icon-box">📝</div>
+    <div class="name">Notas</div>
+    <div class="desc">Bloco de notas</div>
+  </a>
+  <a class="card" data-name="controle gastos" href="https://nildoneumann.github.io/Controle-de-Gastos/" role="listitem">
+    <div class="icon-box">📋</div>
+    <div class="name">Controle Gastos</div>
+    <div class="desc">Meus gastos pessoais</div>
+  </a>
+  <a class="card" data-name="qr code" href="https://nildoneumann.github.io/geradorQrCode/" role="listitem">
+    <div class="icon-box">🔲</div>
+    <div class="name">QR Code</div>
+    <div class="desc">Gerar e ler QR Codes</div>
+  </a>
+  <a class="card" data-name="investimentos" href="https://nildoneumann.github.io/simulador-de-investimentos/" role="listitem">
+    <div class="icon-box">📈</div>
+    <div class="name">Investimentos</div>
+    <div class="desc">Simule Investimentos</div>
+  </a>
+  <a class="card" data-name="newsflow" href="https://nildoneumann.github.io/newsflow/" role="listitem">
+    <div class="icon-box">📰</div>
+    <div class="name">NewsFlow</div>
+    <div class="desc">Notícias em tempo real via Google News</div>
+  </a>
+  
+</main>
+
+<footer>
+  <span>Hub PWA © 2026</span>
+</footer>
+
+</div>
+
+<!-- Modal: Adicionar Favorito -->
+<div class="modal-overlay hidden" id="modal-adicionar" role="dialog" aria-modal="true" aria-label="Adicionar favorito">
+  <div class="modal">
+    <h2>Novo Favorito</h2>
+    <div class="modal-field">
+      <label for="fav-nome">Nome</label>
+      <input type="text" id="fav-nome" placeholder="Ex: Meu Blog" autocomplete="off">
+    </div>
+    <div class="modal-field">
+      <label for="fav-url">URL</label>
+      <input type="url" id="fav-url" placeholder="Ex: www.meusite.com.br" autocomplete="off">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="fecharModal('modal-adicionar')">Cancelar</button>
+      <button class="btn btn-accent" onclick="confirmarAdicionar()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Confirmar Exclusão -->
+<div class="modal-overlay hidden" id="modal-excluir" role="dialog" aria-modal="true" aria-label="Confirmar exclusão">
+  <div class="modal">
+    <h2>Excluir favorito</h2>
+    <p class="confirm-text" id="confirm-excluir-text">Deseja remover este favorito da sua lista?</p>
+    <div class="modal-actions">
+      <button class="btn" onclick="fecharModal('modal-excluir')">Cancelar</button>
+      <button class="btn btn-danger" id="btn-confirmar-excluir">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Search ── */
+const pesquisa = document.getElementById('search');
+pesquisa.addEventListener('input', () => {
+  const valor = pesquisa.value.toLowerCase().trim();
+  const cards = document.querySelectorAll('#apps > .card');
+  let visible = 0;
+  cards.forEach(card => {
+    const match = card.dataset.name.includes(valor);
+    card.style.display = match ? '' : 'none';
+    if (match) visible++;
+  });
+  // Show / hide empty state
+  let empty = document.getElementById('empty-state');
+  if (visible === 0 && valor) {
+    if (!empty) {
+      empty = document.createElement('div');
+      empty.id = 'empty-state';
+      empty.className = 'empty-state';
+      empty.innerHTML = '<div class="empty-icon">🔍</div><p>Nenhum aplicativo encontrado</p>';
+      document.getElementById('apps').appendChild(empty);
+    }
+    empty.style.display = '';
+  } else if (empty) {
+    empty.style.display = 'none';
+  }
+});
+
+/* ── Theme ── */
+const temaBtn = document.getElementById('tema');
+const iconSun = document.getElementById('theme-icon-sun');
+const iconMoon = document.getElementById('theme-icon-moon');
+
+function setTheme(dark) {
+  document.body.classList.toggle('dark', dark);
+  iconSun.style.display = dark ? 'none' : '';
+  iconMoon.style.display = dark ? '' : 'none';
+  localStorage.setItem('tema', dark ? 'dark' : 'light');
+}
+
+temaBtn.addEventListener('click', () => {
+  setTheme(!document.body.classList.contains('dark'));
+});
+
+if (localStorage.getItem('tema') === 'dark') {
+  setTheme(true);
+}
+
+/* ── PWA Install ── */
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const btn = document.getElementById('instalar');
+  btn.hidden = false;
+  btn.addEventListener('click', async () => {
+    deferredPrompt.prompt();
+    deferredPrompt = null;
+    btn.hidden = true;
+  });
+});
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+
+/* ── Favoritos (localStorage) ── */
+let favoritos = [];
+try {
+  const saved = localStorage.getItem('favoritos');
+  if (saved) favoritos = JSON.parse(saved);
+  if (!Array.isArray(favoritos)) favoritos = [];
+} catch (e) {
+  favoritos = [];
+}
+
+function getDominio(url) {
+  try { return new URL(url).hostname.replace('www.', ''); }
+  catch (e) { return url; }
+}
+
+function getFavicon(url) {
+  try {
+    const d = new URL(url).hostname;
+    return `https://www.google.com/s2/favicons?domain=${d}&sz=64`;
+  } catch (e) { return ''; }
+}
+
+/* ── Modal helpers ── */
+function abrirModal(id) {
+  document.getElementById(id).classList.remove('hidden');
+  // Focus first input if available
+  const input = document.querySelector('#' + id + ' input');
+  if (input) setTimeout(() => input.focus(), 100);
+}
+
+function fecharModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.add('hidden');
+  });
+});
+
+// Close modal on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay:not(.hidden)').forEach(m => m.classList.add('hidden'));
+  }
+});
+
+/* ── Adicionar favorito (modal) ── */
+function abrirModalAdicionar() {
+  document.getElementById('fav-nome').value = '';
+  document.getElementById('fav-url').value = '';
+  abrirModal('modal-adicionar');
+}
+
+function confirmarAdicionar() {
+  const nome = document.getElementById('fav-nome').value.trim();
+  let url = document.getElementById('fav-url').value.trim();
+  if (!nome || !url) return;
+  if (!url.startsWith('http')) url = 'https://' + url;
+
+  favoritos.push({ nome, url });
+  localStorage.setItem('favoritos', JSON.stringify(favoritos));
+  fecharModal('modal-adicionar');
+  renderizarFavoritos();
+}
+
+// Submit on Enter in modal
+document.getElementById('fav-url').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') confirmarAdicionar();
+});
+document.getElementById('fav-nome').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('fav-url').focus();
+});
+
+/* ── Excluir favorito (modal) ── */
+let excluirIndex = -1;
+
+function excluirFavorito(index) {
+  excluirIndex = index;
+  const f = favoritos[index];
+  document.getElementById('confirm-excluir-text').textContent =
+    `Deseja remover "${f.nome}" da sua lista?`;
+  abrirModal('modal-excluir');
+}
+
+document.getElementById('btn-confirmar-excluir').addEventListener('click', () => {
+  if (excluirIndex >= 0) {
+    favoritos.splice(excluirIndex, 1);
+    localStorage.setItem('favoritos', JSON.stringify(favoritos));
+    renderizarFavoritos();
+  }
+  fecharModal('modal-excluir');
+  excluirIndex = -1;
+});
+
+/* ── Renderizar favoritos ── */
+function renderizarFavoritos() {
+  const apps = document.getElementById('apps');
+  apps.querySelectorAll('.favorito').forEach(el => el.remove());
+
+  favoritos.forEach((f, index) => {
+    const dominio = getDominio(f.url);
+    const favicon = getFavicon(f.url);
+
+    const card = document.createElement('div');
+    card.className = 'card favorito';
+    card.dataset.name = f.nome.toLowerCase();
+    card.setAttribute('role', 'listitem');
+    card.style.animationDelay = (index * .04) + 's';
+
+    card.innerHTML = `
+      <button class="excluir" onclick="excluirFavorito(${index})" aria-label="Excluir ${f.nome}" title="Excluir">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <a href="${f.url}" target="_blank" rel="noopener noreferrer"
+         style="text-decoration:none;color:inherit;display:flex;flex-direction:column;align-items:center;text-align:center;width:100%;">
+        <div class="icon-box">
+          <img src="${favicon}" alt="" class="icon-favicon"
+               onerror="this.outerHTML='<span style=\\'font-size:1.5rem\\'>⭐</span>'">
+        </div>
+        <div class="name">${f.nome}</div>
+        <div class="desc">${dominio}</div>
+      </a>
+    `;
+
+    apps.appendChild(card);
+  });
+}
+
+renderizarFavoritos();
+
+/* Disable context menu */
+        // Garante a execução após o HTML ser processado pelo navegador
+        window.addEventListener('load', () => {
+            
+            // Bloqueio do menu de contexto com suporte a elementos filhos
+            document.addEventListener('contextmenu', e => {
+                const tagsPermitidas = ['INPUT', 'TEXTAREA', 'IMG'];
+                
+                // Busca se o clique foi na tag ou dentro dela
+                if (e.target.closest(tagsPermitidas.join(','))) {
+                    return; 
+                }
+                e.preventDefault();
+            });
+
+            // Bloqueio das teclas de inspeção (F12, Ctrl+Shift+I, etc.)
+            document.addEventListener('keydown', e => {
+                if (
+                    e.key === 'F12' || 
+                    (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) || 
+                    (e.ctrlKey && e.key === 'u')
+                ) {
+                    e.preventDefault();
+                }
+            });
+            
+        });
+
+    </script>
+</body>
+</html>
