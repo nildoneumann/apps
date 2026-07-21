@@ -1,38 +1,53 @@
-const CACHE_NAME = "hub-v2"; // Mude a versão aqui (ex: v1 para v2) quando alterar o app
-const ASSETS = [
-  "./",
-  "./index.html",
-  "./manifest.json"
-];
+const CACHE = "hub-pwa";
 
-// Instalação: Salva os arquivos e força a ativação imediata
-self.addEventListener("install", e => {
-  e.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(ASSETS))
-      .then(() => self.skipWaiting()) // Força o novo Service Worker a virar o ativo
-  );
+// Instala imediatamente
+self.addEventListener("install", () => {
+    self.skipWaiting();
 });
 
-// Ativação: Limpa caches antigos automaticamente
-self.addEventListener("activate", e => {
-  e.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys.map(key => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key); // Deleta o cache da versão anterior
-          }
-        })
-      );
-    }).then(() => self.clients.claim()) // Assume o controle da página imediatamente
-  );
+// Assume o controle imediatamente
+self.addEventListener("activate", (event) => {
+    event.waitUntil(self.clients.claim());
 });
 
-// Interceptação: Estratégia Cache-First
-self.addEventListener("fetch", e => {
-  e.respondWith(
-    caches.match(e.request)
-      .then(resp => resp || fetch(e.request))
-  );
+// Network First
+self.addEventListener("fetch", (event) => {
+
+    // Apenas GET
+    if (event.request.method !== "GET") return;
+
+    // Ignora extensões do navegador
+    if (!event.request.url.startsWith("http")) return;
+
+    event.respondWith(
+
+        fetch(event.request)
+
+            .then((response) => {
+
+                // Só salva respostas válidas
+                if (response.ok) {
+
+                    const copia = response.clone();
+
+                    caches.open(CACHE).then((cache) => {
+                        cache.put(event.request, copia);
+                    });
+
+                }
+
+                return response;
+
+            })
+
+            .catch(async () => {
+
+                const cache = await caches.match(event.request);
+
+                return cache || Response.error();
+
+            })
+
+    );
+
 });
